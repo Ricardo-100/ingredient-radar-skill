@@ -82,6 +82,8 @@ python evals/run_evals.py --samples samples --out REPORT.md
 
 评测使用 `evals/fixtures/` 中已有的抽取结果，**不衡量 Agent 重新看图时的识别一致性**。运行后在 `REPORT.md` 查看逐例结果。
 
+<img src="assets/ingredient-radar-example.jpg" alt="成分雷达分析食品包装标签示例" width="320" />
+
 ## 进一步阅读
 
 - [SKILL.md](SKILL.md)：触发条件、操作边界和输出契约
