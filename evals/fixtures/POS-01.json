@@ -1,0 +1,116 @@
+{
+  "judged_by": "qwen backend 采集（2026-09-25，移除 HTTP 代码前的最后一次真实抽取）",
+  "is_food_label": true,
+  "caption": "轻态高蛋白威化棒（黑莓味）包装标签，含配料、致敏原及营养成分表",
+  "regions": {
+    "name": {
+      "box": [
+        62,
+        75,
+        498,
+        165
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "product_name": "轻态 · 高蛋白威化棒",
+        "flavor": "黑莓味",
+        "net_content_value": 60,
+        "net_content_unit": "g",
+        "servings_per_pack": 1,
+        "serving_size_value": null,
+        "serving_size_unit": null
+      }
+    },
+    "ing": {
+      "box": [
+        62,
+        195,
+        900,
+        330
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "ingredients": [
+          "花生酱",
+          "白砂糖",
+          "小麦粉",
+          "植物油",
+          "脱脂乳粉",
+          "大豆蛋白粉",
+          "可可脂",
+          "麦芽糊精",
+          "食用盐",
+          "食品添加剂(磷脂、碳酸氢钠)",
+          "食用香料"
+        ],
+        "claim_words": []
+      }
+    },
+    "all": {
+      "box": [
+        62,
+        365,
+        945,
+        460
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "statement": "致敏原提示:含花生、含麸质的谷物(小麦)、乳及乳制品、大豆;生产线亦加工坚果。",
+        "allergens": [
+          "花生",
+          "含麸质的谷物(小麦)",
+          "乳及乳制品",
+          "大豆"
+        ],
+        "cross_contact": [
+          "坚果"
+        ]
+      }
+    },
+    "nut": {
+      "box": [
+        62,
+        505,
+        935,
+        865
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "basis": "每 100 g",
+        "basis_value": 100,
+        "basis_unit": "g",
+        "energy_kj": null,
+        "kcal": 466,
+        "protein": 18.6,
+        "fat": 17.2,
+        "trans_fat": 0,
+        "carbs": 55.8,
+        "sugar": 32.4,
+        "fiber": null,
+        "sodium": 320,
+        "legible": true
+      }
+    }
+  },
+  "judgment": {
+    "gain": {
+      "verdict_id": "gain_mediocre",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "cut": {
+      "verdict_id": "cut_bad",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "keto": {
+      "verdict_id": "keto_bad",
+      "notes": [],
+      "uncertain_reasons": []
+    }
+  }
+}

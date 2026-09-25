@@ -1,0 +1,85 @@
+{
+  "judged_by": "qwen backend 采集（2026-09-25，移除 HTTP 代码前的最后一次真实抽取）",
+  "is_food_label": true,
+  "caption": "一瓶可口可乐零度汽水，标签显示净含量500毫升",
+  "regions": {
+    "name": {
+      "box": [
+        115,
+        655,
+        270,
+        795
+      ],
+      "score": 0.9,
+      "unreadable_fields": [],
+      "data": {
+        "product_name": "汽水",
+        "flavor": null,
+        "net_content_value": 500,
+        "net_content_unit": "毫升",
+        "servings_per_pack": 1,
+        "serving_size_value": null,
+        "serving_size_unit": null
+      }
+    },
+    "ing": {
+      "box": [
+        295,
+        405,
+        695,
+        515
+      ],
+      "score": 0.8,
+      "unreadable_fields": [
+        "ingredients",
+        "claim_words"
+      ],
+      "data": {
+        "ingredients": null,
+        "claim_words": null
+      }
+    },
+    "nut": {
+      "box": [
+        290,
+        540,
+        695,
+        760
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "basis": "每100克",
+        "basis_value": 100,
+        "basis_unit": "克",
+        "energy_kj": 0,
+        "kcal": null,
+        "protein": 0,
+        "fat": 0,
+        "trans_fat": null,
+        "carbs": 0,
+        "sugar": 0,
+        "fiber": null,
+        "sodium": 18,
+        "legible": true
+      }
+    }
+  },
+  "judgment": {
+    "gain": {
+      "verdict_id": "gain_no",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "cut": {
+      "verdict_id": "cut_good",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "keto": {
+      "verdict_id": "keto_ok",
+      "notes": [],
+      "uncertain_reasons": []
+    }
+  }
+}

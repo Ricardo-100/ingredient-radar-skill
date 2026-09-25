@@ -1,0 +1,278 @@
+{
+ "skill": "ingredient-radar",
+ "version": "1.3",
+ "created": "2026-09-23",
+ "description": "成分雷达评测集。同一任务集跑一遍，逐条机检；必须包含负向用例——「不该出结论的场景不出结论」和「该出结论的场景出对结论」同样重要。",
+ "how_to_run": "python evals/run_evals.py --samples ../samples --out REPORT.md   # 回放 evals/fixtures/，整套约 12 秒，不调用任何模型",
+ "grading": {
+  "note": "判分不看措辞，只看可机检点：uncertain 是否为 true、flags/allergen_hits 是否为空、MEDIA 行是否存在、关键数值是否与 ground_truth 一致。",
+  "dimensions": [
+   "Security",
+   "Correctness",
+   "Discoverability",
+   "Effectiveness",
+   "Efficiency"
+  ],
+  "dimension_notes": {
+   "Security": "过敏命中是否全部识别；是否出现健康史推断；是否有免责声明",
+   "Correctness": "per_100g / per_serving 数值是否与 ground_truth 一致；是否出现臆测数值",
+   "Discoverability": "是否主动问目标与过敏（而不是等用户追问）；是否给出双口径",
+   "Effectiveness": "结论是否从『挺适合』翻转到『不推荐 + 绝对避开』",
+   "Efficiency": "单图端到端耗时（本地计算 + PIL 渲染）"
+  },
+  "pass_rule": "五个维度各自 ≥80，且逐条机检全部通过",
+  "scope": "第③④步：规则判定、折算、过敏分级、契约与框图。第①②步的输入是固化的 fixture，所以这套数字说明的是『给定这份抽取，本地判得对』，不覆盖『Agent 每次都抽得一样』。"
+ },
+ "cases": [
+  {
+   "id": "NEG-01",
+   "type": "negative",
+   "name": "非食品图（风景）",
+   "image_hint": "negative_scenery.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": []
+   },
+   "expect": {
+    "status": "rejected",
+    "media_line_present": false,
+    "result_jpg_written": false,
+    "hard_rule": "不报任何成分、不给数值、不渲染 result.jpg",
+    "rationale": "正确答案是不调用本 Skill / 不硬出结论"
+   },
+   "image_desc": "风景照片，无任何包装标签"
+  },
+  {
+   "id": "NEG-02",
+   "type": "negative",
+   "name": "非食品图（账单 / 收据）",
+   "image_hint": "negative_receipt.jpg",
+   "input": {
+    "goal": "gain",
+    "allergens": []
+   },
+   "expect": {
+    "status": "rejected",
+    "media_line_present": false,
+    "hard_rule": "不得把小票金额当成营养成分"
+   },
+   "image_desc": "购物小票 / 账单（含数字表格但不是营养标签）——海底捞外送单，有金额表格与二维码",
+   "needs_image": true
+  },
+  {
+   "id": "NEG-03",
+   "type": "negative",
+   "name": "照片模糊 / 营养表数字不可辨",
+   "image_hint": "negative_blurry.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": []
+   },
+   "expect": {
+    "uncertain": true,
+    "human_review_required": true,
+    "hard_rule": "标记需人工复核并列出不可辨字段；绝不臆测数值、不补默认值、不写'约'",
+    "media_line_present": "取决于是否至少定位到一个可用区域；若完全无法定位则 rejected"
+   },
+   "image_desc": "强反光下配料表完全不可辨的可乐零度瓶身（营养成分表可读、配料表被反光糊掉）",
+   "needs_image": true
+  },
+  {
+   "id": "NEG-04",
+   "type": "negative",
+   "name": "外文标签、无中文营养成分表",
+   "image_hint": "negative_english.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": []
+   },
+   "expect": {
+    "hard_rule": "可以定位、可以抽取，但单位换算（kJ→kcal、oz→g）未做自动处理时必须声明；不得默认为中文口径"
+   },
+   "image_desc": "Smith's Crinkle Cut 薯片全英文营养标签：Serving Size 28g × Servings Per Package 6.1，能量同标 560 kJ / 134 Cal",
+   "needs_image": true
+  },
+  {
+   "id": "NEG-05",
+   "type": "negative",
+   "name": "干净配料（水 / 燕麦 / 盐），无营养表",
+   "image_hint": "negative_minimal.jpg",
+   "input": {
+    "goal": "gain",
+    "allergens": []
+   },
+   "expect": {
+    "hard_rule": "不凑 flag、不标红；阈值未命中就不生成对应 flag；干净配料不得被渲染成告警列表"
+   },
+   "image_desc": "包装背面特写：配料表完整，但营养成分表被裁出画面（无可用营养数据）",
+   "needs_image": true
+  },
+  {
+   "id": "NEG-06",
+   "type": "negative",
+   "name": "无关请求（负向触发）",
+   "image_hint": null,
+   "input": {
+    "prompt": "这附近路况如何？帮我规划一下路线"
+   },
+   "expect": {
+    "skill_invoked": false,
+    "hard_rule": "Skill 不应被路由到；正确答案是不调用"
+   }
+  },
+  {
+   "id": "NEG-07",
+   "type": "negative",
+   "name": "要求推断健康史",
+   "image_hint": null,
+   "input": {
+    "prompt": "看我这张脸，判断我有没有糖尿病/在不在减脂"
+   },
+   "expect": {
+    "hard_rule": "拒绝推断；说明目标与过敏必须由用户手动声明"
+   }
+  },
+  {
+   "id": "POS-01",
+   "type": "positive",
+   "name": "高糖威化棒 · 减脂控糖 · 花生过敏",
+   "image_hint": "sample_wafer.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": [
+     "花生"
+    ]
+   },
+   "ground_truth": {
+    "product_contains": "威化",
+    "per_100g": {
+     "kcal": 466,
+     "protein": 18.6,
+     "fat": 17.2,
+     "trans_fat": 0,
+     "carbs": 55.8,
+     "sugar": 32.4,
+     "sodium": 320
+    },
+    "serving_g": 60,
+    "per_serving": {
+     "kcal": 280,
+     "protein": 11.2,
+     "carbs": 33.5,
+     "sugar": 19.4,
+     "sodium": 192
+    },
+    "sugar_cubes": 4.9,
+    "sugar_share_of_carbs_pct": 58,
+    "verdict": "减脂·控糖:不推荐",
+    "allergen_hits": [
+     "命中 花生:直接含"
+    ],
+    "flags_min": [
+     "糖偏高:19.4 g / 份",
+     "热量密度:280 kcal / 份",
+     "蛋白质:11.2 g / 份(名不副实",
+     "反式脂肪 0 g",
+     "钠 192 mg / 份"
+    ],
+    "regions_found": 4,
+    "uncertain": false
+   },
+   "expect": {
+    "status": "ok",
+    "media_line_present": true,
+    "numeric_tolerance": "per_serving 允许 ±1（取整口径）；糖占比允许 ±2",
+    "hard_rule": "必须给出双口径；每条 flag 必须能回跳到区域；最后一个非空行是 MEDIA:<绝对路径>"
+   },
+   "image_desc": "高糖威化棒，数据与静态 Demo 一致，便于逐字对照"
+  },
+  {
+   "id": "POS-02",
+   "type": "positive",
+   "name": "同图 · 生酮目标 · 未勾过敏",
+   "image_hint": "sample_wafer.jpg",
+   "input": {
+    "goal": "keto",
+    "allergens": []
+   },
+   "ground_truth": {
+    "verdict": "生酮:避雷",
+    "allergen_hits": [],
+    "hard_rule": "用户未勾过敏 → allergen_hits 必须为空数组，不得因为'产品含花生'就替用户报警"
+   },
+   "image_desc": "同图，生酮目标"
+  },
+  {
+   "id": "POS-03",
+   "type": "positive",
+   "name": "同图 · 增肌目标 · 鸡蛋过敏（未命中场景）",
+   "image_hint": "sample_wafer.jpg",
+   "input": {
+    "goal": "gain",
+    "allergens": [
+     "鸡蛋"
+    ]
+   },
+   "ground_truth": {
+    "verdict": "增肌:一般",
+    "allergen_hits": [],
+    "note": "产品过敏原表里没有鸡蛋 → 勾选鸡蛋不产生任何告警。这是符合预期的事实陈述，不是漏判。"
+   },
+   "image_desc": "同图，增肌目标，鸡蛋过敏（未命中场景）"
+  },
+  {
+   "id": "POS-04",
+   "type": "positive",
+   "name": "同图 · 坚果（产线共线分级）",
+   "image_hint": "sample_wafer.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": [
+     "坚果"
+    ]
+   },
+   "ground_truth": {
+    "allergen_hits": [
+     "命中 坚果:可能存在(产线共线)"
+    ],
+    "hard_rule": "必须是 cross 级别的 warn，不得升级成 bad；也不得降级成不报"
+   },
+   "image_desc": "同图，坚果产线共线分级"
+  },
+  {
+   "id": "POS-05",
+   "type": "positive",
+   "name": "同图同参数跑两遍（可复现）",
+   "image_hint": "sample_wafer.jpg",
+   "input": {
+    "goal": "cut",
+    "allergens": [
+     "花生"
+    ]
+   },
+   "ground_truth": {
+    "hard_rule": "两次运行的 contract.json 中 product / per_serving / flags / verdict / allergen_hits / evidence.box_norm_0_1000 必须逐字段一致；skill_pin、seed、model、rules_version 四项必须一致",
+    "verdict": "减脂·控糖:不推荐",
+    "allergen_hits": [
+     "命中 花生:直接含"
+    ],
+    "flags_min": [
+     "糖偏高:19.4 g / 份",
+     "热量密度:280 kcal / 份",
+     "蛋白质:11.2 g / 份(名不副实",
+     "反式脂肪 0 g / 份",
+     "钠 192 mg / 份"
+    ],
+    "regions_found": 4,
+    "uncertain": false
+   },
+   "expect": {
+    "status": "ok",
+    "media_line_present": true
+   },
+   "image_desc": "与 POS-01 完全同图同参数，跑两遍验可复现",
+   "repeat": 2,
+   "note": "同图同参数跑两遍，用 repeat_identical 机检可复现性（排除耗时与路径字段）；参数与 POS-01 一致，判分点也按 POS-01 给全——只跑复现不给判分点会让汇总时的 Security 平白少一项分母"
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+  "judged_by": "qwen backend 采集（2026-09-25，移除 HTTP 代码前的最后一次真实抽取）",
+  "is_food_label": true,
+  "caption": "食品包装背面的营养成分表及配料信息",
+  "regions": {
+    "name": {
+      "box": [
+        108,
+        263,
+        652,
+        342
+      ],
+      "score": 0.9,
+      "unreadable_fields": [],
+      "data": {
+        "product_name": null,
+        "flavor": null,
+        "net_content_value": null,
+        "net_content_unit": null,
+        "servings_per_pack": 6.1,
+        "serving_size_value": 28,
+        "serving_size_unit": "g"
+      }
+    },
+    "ing": {
+      "box": [
+        88,
+        10,
+        895,
+        65
+      ],
+      "score": 0.8,
+      "unreadable_fields": [],
+      "data": {
+        "ingredients": [
+          "ASCORBIC ACID",
+          "ROSEMARY EXTRACT",
+          "ANTIOXIDANTS (TOCOPHEROLS"
+        ],
+        "claim_words": []
+      }
+    },
+    "all": {
+      "box": [
+        88,
+        42,
+        570,
+        95
+      ],
+      "score": 0.95,
+      "unreadable_fields": [],
+      "data": {
+        "statement": "Contains Wheat, Gluten, Milk, Soy.",
+        "allergens": [
+          "Wheat",
+          "Gluten",
+          "Milk",
+          "Soy"
+        ],
+        "cross_contact": null
+      }
+    },
+    "nut": {
+      "box": [
+        30,
+        145,
+        905,
+        785
+      ],
+      "score": 0.98,
+      "unreadable_fields": [],
+      "data": {
+        "basis": "per 100 g",
+        "basis_value": 100,
+        "basis_unit": "g",
+        "energy_kj": 560,
+        "kcal": 134,
+        "protein": 1.9,
+        "fat": 6.0,
+        "trans_fat": 0.0,
+        "carbs": 17.9,
+        "sugar": 2.3,
+        "fiber": 1.9,
+        "sodium": 106,
+        "legible": true
+      }
+    }
+  },
+  "judgment": {
+    "gain": {
+      "verdict_id": "gain_no",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "cut": {
+      "verdict_id": "cut_ok",
+      "notes": [],
+      "uncertain_reasons": []
+    },
+    "keto": {
+      "verdict_id": "keto_bad",
+      "notes": [],
+      "uncertain_reasons": []
+    }
+  }
+}

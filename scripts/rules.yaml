@@ -1,0 +1,371 @@
+# =====================================================================
+# 成分雷达 · 规则表（rules.yaml）
+#
+# 附录 A1 的落地：把静态 Demo 里内联在代码中的阈值与文案全部抽成这张表。
+# 换目标、换阈值只改这张表，不用碰一行 Python。
+#
+# 本文件刻意写成「YAML 子集」：只用缩进嵌套 mapping、`- item` 标量块序列、
+# `- key: value` 块序列映射与行标量，因此装不了 PyYAML 的环境也能用
+# scripts/miniyaml.py 直接解析（零第三方依赖）。
+#
+# 模板变量由 scripts/judge.py 注入，用 {var} 引用：
+#   {value} 该项每份折算值   {kcal} {protein} {fat} {carbs} {sugar} {sodium} {trans_fat}
+#   {sugar_cubes} 方糖块数   {sugar_share} 糖占碳水百分比   {net_carbs} 净碳水或总碳水
+#   {protein_density} g 蛋白/100 kcal
+#   {sodium_nrv} / {protein_nrv} / {fat_nrv} / {carbs_nrv} / {kcal_nrv}  各指标每份占每日参考值%
+#   {kcal_ref_name} 分母名字（「每日 NRV」或「你每日所需」）  {kcal_ref_kcal} 该分母的千卡数
+#   {sodium_ref_mg} / {protein_ref_g} / {fat_ref_g} / {carbs_ref_g}  三大项的人口参考值
+#   {claim} 包装话术关键词     {sugar_ingredients} 配料表中靠前的含糖配料
+#   {sweeteners} 配料表里的代糖   {sweetener_note} 代糖说明（没有则为空串）
+#   {pku_warning} 苯丙酮尿症警示（没有则为空串）
+#   {serving_g} 每份克数      {basis} 营养成分表表头声明（如「每 100 g」）
+#
+# 分支条件（verdicts 与 base_flags 都支持，自上而下取第一条命中的）：
+#   metric_at_least / metric_below / metric_at_most   指标取上一行的 metric 字段
+#   <指标名>_at_least / _below / _at_most             指标名直接写在键里，
+#                                                     派生量（sodium_nrv_serving_pct…）也能用
+#   requires_claim: true                              只有包装真这么宣称过才命中该分支
+# =====================================================================
+version: "1.3"
+updated: "2026-09-23"
+origin: "由「成分雷达_工作流demo.html」内联阈值抽取而来；v1.2 起 verdict 支持条件分支、补代糖口径；v1.3 起占比分母可按个人资料推算（profile.py），蛋白/脂肪/碳水也带 NRV%，单位统一为「份」"
+
+# ---------------------------------------------------------------- 引用常量
+reference:
+  sugar_cube_g: 4
+  nrv_sodium_mg: 2000        # GB 28050 钠 NRV（mg）
+  nrv_kcal: 2007.6           # GB 28050 能量 NRV 是 8400 **kJ**，8400 / 4.184 = 2007.6 kcal；
+                             # 写成 8400 kcal 会把占比算小 4.184 倍（曾犯过，注释留着当教训）
+                             # ⚠ 这两项只是给人看的文档副本，真正参与计算的分母在
+                             #   scripts/config.py 的 NRV_SODIUM_MG / NRV_KCAL，改要改那边
+  gb_trans_zero_limit_g_per_100g: 0.3
+  good_protein_threshold_g: 20
+  # 生酮日常可耐受的碳水（g / 份）。低于它就谈不上「打断血酮」。
+  keto_carbs_ok_g: 5
+  keto_carbs_risky_g: 20
+  # 减脂控糖：一份含糖到这个量就该劝退
+  cut_sugar_bad_g: 12
+  cut_kcal_snack_g: 250
+
+# ---------------------------------------------------------------- 基础 flag
+# thresholds 自上而下取第一条命中的；每条自带 title / detail 模板，
+# 所以「同一个指标在不同区间说不同的话」也能写在表里。
+base_flags:
+
+  sugar:
+    metric: sugar
+    unit: " g / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 糖 / 配料表"
+    thresholds:
+      - metric_at_least: 12
+        id: sugar_high
+        level: bad
+        icon: "🚩"
+        title: "糖偏高:{value} g / 份"
+        detail: "≈ {sugar_cubes} 块方糖，约占碳水 {sugar_share}%。糖来自配料表前列的「{sugar_ingredients}」。GB 7718 要求配料按加入量递减排序，靠前本身就是法规级证据。"
+      - metric_at_least: 0.5
+        id: sugar_moderate
+        level: warn
+        icon: "⚠️"
+        title: "含糖:{value} g / 份"
+        detail: "按每份折算 {value} g，约 {sugar_cubes} 块方糖；配料表前段的含糖来源是「{sugar_ingredients}」。"
+      - metric_at_least: 0
+        id: sugar_free
+        level: good
+        icon: "✅"
+        title: "糖 {value} g / 份"
+        detail: "营养成分表标示为 0，属于无糖。注意「无糖」说的是糖，不等于没有甜味剂——本品的甜味来自 {sweeteners}（详见下方代糖条目）。"
+
+  kcal:
+    metric: kcal
+    unit: " kcal / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 能量"
+    thresholds:
+      - metric_at_least: 250
+        id: kcal_dense
+        level: warn
+        icon: "🚩"
+        title: "热量密度:{value} kcal / 份"
+        detail: "作为加餐已接近半餐预算；占多数减脂者一日零食额度的大半。"
+      - metric_at_least: 100
+        id: kcal_moderate
+        level: warn
+        icon: "⚠️"
+        title: "热量 {value} kcal / 份"
+        detail: "按每份折算 {value} kcal，约占{kcal_ref_name}（{kcal_ref_kcal} kcal）的 {kcal_nrv}%；作为加餐尚可，仍在常见零食额度内。"
+      - metric_at_least: 0
+        id: kcal_low
+        level: good
+        icon: "✅"
+        title: "热量 {value} kcal / 份"
+        detail: "按每份折算 {value} kcal（约占{kcal_ref_name}（{kcal_ref_kcal} kcal）的 {kcal_nrv}%），热量负担可以忽略。注：标签按国标以千焦标示，此处已按 1 kcal = 4.184 kJ 折算。"
+
+  protein:
+    metric: protein
+    unit: " g / 份"
+    region: ing
+    src: "→ 回跳:配料表 · 蛋白来源"
+    thresholds:
+      - metric_below: 20
+        requires_claim: true
+        id: protein_overclaim
+        level: warn
+        icon: "⚠️"
+        title: "蛋白质:{value} g / 份(名不副实，占每日蛋白 {protein_nrv}%)"
+        detail: "包装主打「{claim}」，但按每份折算仅 {value} g，够应急加餐却够不上优质蛋白来源(≥{good_protein} g)；蛋白质密度仅 {protein_density} g/100 kcal。增肌别指望它。"
+      - metric_at_least: 20
+        id: protein_rich
+        level: good
+        icon: "✅"
+        title: "蛋白质:{value} g / 份(占每日蛋白 NRV {protein_nrv}%)"
+        detail: "按每份折算 {value} g，够得上优质蛋白来源口径(≥{good_protein} g)，蛋白质密度 {protein_density} g/100 kcal。"
+      # 没宣称过蛋白的品类（可乐、果汁、苏打水）蛋白 0 g 是常态，
+      # 报「名不副实」是无的放矢；这一档只说事实，不贴好坏标签。
+      - metric_at_least: 0
+        id: protein_irrelevant
+        level: good
+        icon: "✅"
+        title: "蛋白质 {value} g / 份(占每日蛋白 NRV {protein_nrv}%)"
+        detail: "本品类并非蛋白来源（配料表未见蛋白宣称：{claim}）。增肌期别把它算进蛋白配额，换乳清 / 蛋 / 鸡胸。"
+
+  fat:
+    # 脂肪也要看占比：一份 30 g 脂肪 = 脂肪 NRV(60 g) 的一半，单看克数没概念
+    metric: fat_nrv_serving_pct
+    value_metric: fat
+    unit: "% NRV / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 脂肪"
+    thresholds:
+      - metric_at_least: 50
+        id: fat_high
+        level: bad
+        icon: "🚩"
+        title: "脂肪:{value} g / 份(占每日脂肪 NRV 的 {fat_nrv}%)"
+        detail: "一份就占掉脂肪 NRV({fat_ref_g} g)的一半以上，脂肪密度高；若同时热量也高，减脂期要按「半份」算。"
+      - metric_at_least: 20
+        id: fat_moderate
+        level: warn
+        icon: "⚠️"
+        title: "脂肪:{value} g / 份(占每日脂肪 NRV 的 {fat_nrv}%)"
+        detail: "占脂肪 NRV({fat_ref_g} g)的 {fat_nrv}%，中等；看配料表脂肪来源比看克数更有用。"
+      - metric_at_least: 0
+        id: fat_low
+        level: good
+        icon: "✅"
+        title: "脂肪 {value} g / 份(占每日脂肪 NRV 的 {fat_nrv}%)"
+        detail: "仅占脂肪 NRV({fat_ref_g} g)的 {fat_nrv}%，低脂，不必为这一项纠结。"
+
+  trans_fat:
+    metric: trans_fat
+    unit: " g / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 脂肪"
+    thresholds:
+      - metric_at_least: 0
+        id: trans_zero
+        level: good
+        icon: "✅"
+        title: "反式脂肪 {value} g / 份(≤0.3 g/100 g 即可标 0)"
+        detail: "表上标示为 0 g（GB 28050 口径：反式脂肪酸 ≤ 0.3 g/100 g 即可标注为 0，故「标 0」不等于绝对为 0），这一点是好的。"
+
+  carbs:
+    # 碳水占比：300 g 是人口 NRV。绝对量交给各目标的 verdict 判（生酮看 5/20 g 两条线），
+    # 这里只补「占一天额度多少」的语境，免得用户自己换算。
+    metric: carbs_nrv_serving_pct
+    value_metric: carbs
+    unit: "% NRV / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 碳水化合物"
+    thresholds:
+      - metric_at_least: 50
+        id: carbs_high
+        level: warn
+        icon: "🚩"
+        title: "碳水:{value} g / 份(占每日碳水 NRV 的 {carbs_nrv}%)"
+        detail: "一份就占碳水 NRV({carbs_ref_g} g)的一半，碳水密度很高；该不该吃仍要看你的目标（生酮按绝对克数判，见结论区）。"
+      - metric_at_least: 20
+        id: carbs_moderate
+        level: warn
+        icon: "⚠️"
+        title: "碳水:{value} g / 份(占每日碳水 NRV 的 {carbs_nrv}%)"
+        detail: "占碳水 NRV({carbs_ref_g} g)的 {carbs_nrv}%，中等；其中糖 {sugar} g（占碳水 {sugar_share}%）。"
+      - metric_at_least: 0
+        id: carbs_low
+        level: good
+        icon: "✅"
+        title: "碳水 {value} g / 份(占每日碳水 NRV 的 {carbs_nrv}%)"
+        detail: "仅占碳水 NRV({carbs_ref_g} g)的 {carbs_nrv}%；生酮人群另看绝对克数（≤5 g 友好 / ≥20 g 避雷）。"
+
+  sodium:
+    # 钠本身该看「占每日推荐摄入量的比例」，绝对值脱离语境没有意义。
+    # metric 只用来分档；标题里显示的仍是毫克，靠 value_metric 分开。
+    metric: sodium_nrv_serving_pct
+    value_metric: sodium
+    unit: "% NRV / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 钠"
+    thresholds:
+      - metric_at_least: 25
+        id: sodium_high
+        level: warn
+        icon: "🚩"
+        title: "钠 {value} mg / 份(占每日推荐 {sodium_ref_mg} mg 的 {sodium_nrv}%)"
+        detail: "一份就占钠 NRV({sodium_ref_mg} mg)的 {sodium_nrv}%，高血压 / 易水肿者注意当日累计。"
+      - metric_at_least: 10
+        id: sodium_moderate
+        level: warn
+        icon: "⚠️"
+        title: "钠 {value} mg / 份(占每日推荐 {sodium_ref_mg} mg 的 {sodium_nrv}%)"
+        detail: "占钠 NRV({sodium_ref_mg} mg)的 {sodium_nrv}%，中等；高血压 / 易水肿者注意当日累计。"
+      - metric_at_least: 0
+        id: sodium_low
+        level: good
+        icon: "✅"
+        title: "钠 {value} mg / 份(占每日推荐 {sodium_ref_mg} mg 的 {sodium_nrv}%)"
+        detail: "仅占钠 NRV({sodium_ref_mg} mg)的 {sodium_nrv}%，低钠，不必为这一项纠结。"
+
+  sweetener:
+    # 无糖饮料的真问题：糖是 0，但代糖的影响从来不写在营养成分表上
+    metric: sweetener_count
+    unit: " 种"
+    region: ing
+    src: "→ 回跳:配料表 · 甜味剂"
+    thresholds:
+      - metric_at_least: 1
+        pku_count_at_least: 1
+        id: sweetener_pku
+        level: bad
+        icon: "🚫"
+        title: "含代糖：{sweeteners}"
+        detail: "{sweetener_note} {pku_warning}"
+      - metric_at_least: 1
+        id: sweetener_present
+        level: warn
+        icon: "⚠️"
+        title: "含代糖：{sweeteners}"
+        detail: "{sweetener_note}"
+
+  fiber:
+    # 净碳水 = 碳水 − 膳食纤维；表上没给膳食纤维就不算净碳水，也不硬估
+    metric: fiber
+    unit: " g / 份"
+    region: nut
+    src: "→ 回跳:营养成分表 · 膳食纤维"
+    thresholds:
+      - metric_at_least: 3
+        id: fiber_good
+        level: good
+        icon: "✅"
+        title: "膳食纤维 {value} g / 份"
+        detail: "可以按「碳水 − 膳食纤维」得到净碳水 {net_carbs} g / 份，这个口径对生酮更实在。"
+
+# ---------------------------------------------------------------- 目标判定三态
+# 每个目标都可以写 thresholds（自上而下第一条命中）；不写就退回单条 title/detail。
+# 生酮必须有分支：碳水 0 g 是生酮最理想的状态，碳水 20 g 以上才会打断血酮。
+# v1.1 只有一句「碳水 {carbs} g / 份，足以直接中断血酮」，无糖可乐于是被判成
+# 「生酮:避雷」——结论和生酮的机制正好相反，这是本次修订的起点。
+verdicts:
+  gain:
+    metric: protein
+    level: warn
+    emoji: "💪"
+    thresholds:
+      - metric_at_least: 15
+        id: gain_good
+        level: good
+        title: "增肌:合适"
+        detail: "每份 {protein} g 蛋白（{protein_density} g/100 kcal），训练后补充正合适；配 {carbs} g 碳水利于糖原恢复。"
+      - metric_at_least: 5
+        id: gain_mediocre
+        level: warn
+        title: "增肌:一般"
+        detail: "蛋白 {protein} g 只算应急补充，糖又偏高。增肌优选鸡蛋 / 乳清 + 低糖碳水；嘴馋可吃，别当主力。"
+      - metric_at_least: 0
+        id: gain_no
+        level: warn
+        title: "增肌:不合适"
+        detail: "每份蛋白 {protein} g，接近零，对增肌没有贡献；增肌期把蛋白配额留给乳清 / 蛋 / 肉。{sweetener_note}"
+  cut:
+    metric: sugar
+    level: bad
+    emoji: "🔥"
+    thresholds:
+      - sugar_at_least: 12
+        id: cut_bad
+        level: bad
+        title: "减脂·控糖:不推荐"
+        detail: "一份 {kcal} kcal + {sugar} g 糖(≈{sugar_cubes}块方糖)，减脂期易造成热量盈余与血糖过山车；建议换无糖高蛋白替代。"
+      - kcal_at_least: 250
+        id: cut_dense
+        level: warn
+        title: "减脂·控糖:要掂量"
+        detail: "一份 {kcal} kcal 已接近半餐预算，糖虽只有 {sugar} g，热量本身就会吃掉减脂额度；建议减半或换低热量密度替代。"
+      - sugar_at_most: 0.5
+        kcal_at_most: 100
+        id: cut_good
+        level: good
+        title: "减脂·控糖:友好"
+        detail: "每份 {kcal} kcal、糖 {sugar} g，热量与糖双低，不会破坏减脂额度。{sweetener_note}"
+      - metric_at_least: 0
+        id: cut_ok
+        level: warn
+        title: "减脂·控糖:适量"
+        detail: "每份 {kcal} kcal、糖 {sugar} g(≈{sugar_cubes}块方糖)，占一日能量 NRV 的 {kcal_nrv}%；解馋可以，别按份炫。"
+  keto:
+    metric: carbs
+    level: bad
+    emoji: "🥑"
+    thresholds:
+      # 0 g 碳水是生酮最理想的状态，绝不是「打断血酮」
+      - carbs_at_most: 5
+        id: keto_ok
+        level: good
+        title: "生酮:友好"
+        detail: "碳水仅 {carbs} g / 份，远低于打断血酮的量，生酮期可以喝。{sweetener_note}"
+      - carbs_below: 20
+        id: keto_risky
+        level: warn
+        title: "生酮:谨慎"
+        detail: "碳水 {carbs} g / 份，本身不足以打断血酮，但会吃掉当日宝贵的碳水额度；按总碳水从严累计，别和正餐叠着吃。{sweetener_note}"
+      - carbs_at_least: 20
+        id: keto_bad
+        level: bad
+        title: "生酮:避雷"
+        detail: "碳水 {carbs} g / 份，足以直接中断血酮；成分表未提供膳食纤维，净碳水不可知，此处按总碳水从严判断。生酮 / 控糖期不建议。{sweetener_note}"
+
+# ---------------------------------------------------------------- 过敏原交叉核验
+allergen:
+  direct:
+    icon: "🚫"
+    level: bad
+    title: "命中 {allergen}:直接含"
+    detail: "配料 / 致敏原提示中明确含有，请严格避开。"
+    src: "→ 回跳:致敏原提示行"
+  cross:
+    icon: "⚠️"
+    level: warn
+    title: "命中 {allergen}:可能存在(产线共线)"
+    detail: "产线亦加工该过敏原，极度敏感者当心。"
+    src: "→ 回跳:致敏原提示行"
+
+# ---------------------------------------------------------------- 不确定 / 人工复核
+# 命中任一条件即 uncertain: true —— 只标不确定，绝不补数值。
+uncertain:
+  human_review_text: "需人工复核原包装：存在不可辨或缺失的字段，本报告未对其做任何估计。"
+  conditions:
+    - nut_table_missing
+    - nut_illegible
+    - missing_any_of_kcal_sugar_sodium_protein
+    - net_content_missing
+    - double_check_unreadable
+  max_missing_for_full_verdict: 0
+
+# ---------------------------------------------------------------- 导出契约
+export:
+  contract_version: "1.3"
+  include_evidence: true
+  include_disclaimer: true
+  disclaimer: "以上仅为配料与营养成分的机械比对，不替代医嘱、不等同专业营养诊断；一切数值以包装标识为准，过敏请务必人工复核原包装。"
+  media_line: "MEDIA:"

@@ -1,0 +1,36 @@
+# ---- 本机构建产物，不要提交 ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ---- 产物（每台机器本地生成即可）----
+output/
+samples/_*/
+skills-src/ingredient-radar/output/
+skills-src/ingredient-radar/evals/_runs/
+*.log
+
+# ---- 密钥与本地配置：绝不提交 ----
+.env
+.env.*
+!.env.example
+*credential*
+*secret*
+登录信息表.*
+!skills-src/ingredient-radar/references/fonts/.gitkeep
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 临时 ----
+/tmp/
+.scan-export/
+*.tmp
+_crop_*.jpg
+_probe.jpg
