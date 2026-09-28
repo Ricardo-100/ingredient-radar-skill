@@ -11,11 +11,10 @@
 | 项目及报告书 | [项目报告书](docs/PROJECT_REPORT.md) |
 | 60 秒横屏 Demo | [观看说明与视频下载](docs/DEMO.md) |
 | 参赛征文 | [从“高蛋白”到“看得见依据”：成分雷达的开发记录](docs/COMPETITION_ESSAY.md) |
-| 可编辑视频工程 | [Remotion 源码与素材](promo-video/README.md) |
 
 [![成分雷达 60 秒 Demo](docs/media/ingredient-radar-cover.jpg)](docs/DEMO.md)
 
-Demo 包含 Agent 对话流程示意及实际脚本结果回放，配有中文旁白与字幕。视频、报告、征文及制作源码均保存在本仓库；网页播放器配置见 [GitHub 托管说明](docs/PUBLISHING.md)。
+Demo 包含 Agent 对话流程示意及实际脚本结果回放，配有中文旁白与字幕。视频、报告、征文及演示依据均保存在本仓库；网页播放器配置见 [GitHub 托管说明](docs/PUBLISHING.md)。
 
 ## 能做什么
 

@@ -85,9 +85,9 @@ Agent 根据同一张原图填写结构化 JSON，提供 0–1000 归一化定�
 
 每份数字按脚本输出精度显示。例如，糖为 `32.4 × 60 / 100 = 19.44 g`，显示为 19.4 g。原文“花生酱”及致敏原提示对应“花生：直接含”；规则结论为“减脂·控糖：不推荐”。这描述的是该样例、该份量、该目标下的项目规则输出。
 
-![实际脚本生成的结果图](../promo-video/public/actual-result.jpg)
+![实际脚本生成的结果图](media/demo-result.jpg)
 
-演示数据可见 [demo-data.json](../promo-video/src/demo-data.json)，其中仅保留用于展示的字段。
+演示数据可见 [demo-data.json](media/demo-data.json)，其中仅保留用于展示的字段。
 
 ### 复现命令
 
@@ -106,7 +106,7 @@ python -X utf8 scripts/main.py samples/sample_wafer.jpg --agent-json evals/fixtu
 - 画幅：1920 × 1080，横屏，30 fps。
 - 内容：提供照片、声明目标与忌口、每份换算、原文证据和不确定性复核。
 - 形式：中文旁白、嵌入字幕、对话流程动效与实际结果图。
-- 入口：[Demo 说明与 MP4](DEMO.md)；可编辑工程：[promo-video](../promo-video)。
+- 入口：[Demo 说明与 MP4](DEMO.md)。
 
 ## 六、完成情况与验证口径
 

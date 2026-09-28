@@ -34,3 +34,8 @@ desktop.ini
 *.tmp
 _crop_*.jpg
 _probe.jpg
+
+# ---- 宣传片制作工程和中间材料，仅保留本地 ----
+/promo-video/
+/docs/media/storyboard.json
+node_modules/

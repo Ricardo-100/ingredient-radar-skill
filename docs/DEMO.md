@@ -3,7 +3,7 @@
 [![点击打开 MP4 视频](media/ingredient-radar-cover.jpg)](https://github.com/Ricardo-100/ingredient-radar-skill/raw/refs/heads/main/docs/media/ingredient-radar-demo.mp4)
 
 **[打开 / 下载 MP4 成片](https://github.com/Ricardo-100/ingredient-radar-skill/raw/refs/heads/main/docs/media/ingredient-radar-demo.mp4)**<br>
-[仓库内的视频文件](media/ingredient-radar-demo.mp4) · [字幕 SRT](media/ingredient-radar-promo.srt) · [视频源码](../promo-video) · [项目报告书](PROJECT_REPORT.md) · [参赛征文](COMPETITION_ESSAY.md)
+[仓库内的视频文件](media/ingredient-radar-demo.mp4) · [字幕 SRT](media/ingredient-radar-promo.srt) · [项目报告书](PROJECT_REPORT.md) · [参赛征文](COMPETITION_ESSAY.md)
 
 链接由 GitHub 托管。浏览器可能直接播放，也可能下载；下载后可用本地播放器打开。仓库同时包含 [HTML 播放页源文件](index.html)，启用 GitHub Pages 后可在网页中播放。
 
@@ -34,7 +34,7 @@
 
 画面中的对话为流程示意，项目当前以 Agent Skill 运行，没有独立 App。演示使用仓库合成标签 [sample_wafer.jpg](../samples/sample_wafer.jpg) 和固化抽取 [POS-01.json](../evals/fixtures/POS-01.json)。营养数字与结果图来自实际 Python 脚本回放；不代表本次重新识别，也不是识别准确率评测。
 
-成片制作说明见 [PRODUCTION.md](../promo-video/PRODUCTION.md)，文件信息与校验值见 [manifest.json](media/manifest.json)。
+结果图与展示数据分别见 [demo-result.jpg](media/demo-result.jpg) 和 [demo-data.json](media/demo-data.json)。文件信息与校验值见 [manifest.json](media/manifest.json)。
 
 ## 提交表单时使用
 
