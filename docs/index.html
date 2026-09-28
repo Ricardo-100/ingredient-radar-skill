@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="成分雷达项目演示：提供食品标签，选择目标，查看营养换算与原图依据。60 秒横屏中文 Demo。">
+  <title>成分雷达 · 60 秒项目 Demo</title>
+  <style>
+    :root{color-scheme:dark;--bg:#091f19;--panel:#102d25;--ink:#f4f7ee;--muted:#b0c6ba;--lime:#d7ff75;--line:#355044}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Microsoft YaHei",sans-serif}
+    .wrap{max-width:1120px;margin:auto;padding:28px 24px 64px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--line);padding-bottom:22px}
+    .logo{font-weight:750;letter-spacing:.06em}.logo span{color:var(--lime)}
+    a{color:var(--lime);text-underline-offset:4px}a:focus-visible,button:focus-visible,video:focus-visible{outline:3px solid var(--lime);outline-offset:5px}
+    nav{display:flex;gap:22px;flex-wrap:wrap;font-size:14px}
+    .eyebrow{color:var(--lime);font-size:13px;letter-spacing:.18em;margin:44px 0 12px}
+    h1{font-size:clamp(32px,5vw,60px);line-height:1.18;letter-spacing:-.04em;margin:0 0 18px}
+    .intro{color:var(--muted);max-width:740px;margin-bottom:28px}
+    video{display:block;width:100%;aspect-ratio:16/9;background:#071610;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 60px #0004}
+    .tools{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:18px 0 28px}
+    .meta{font-size:14px;color:var(--muted)}
+    .button{display:inline-block;border:1px solid var(--line);padding:9px 16px;border-radius:8px;text-decoration:none;color:var(--ink);background:var(--panel)}
+    .button:hover{border-color:var(--lime)}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .card{padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+    .num{color:var(--lime);font-size:12px;letter-spacing:.12em}.card h2{margin:8px 0;font-size:20px}.card p{margin:0;color:var(--muted);font-size:14px}
+    details{margin:28px 0;padding:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted)}
+    summary{cursor:pointer;color:var(--ink)}details p:last-child{margin-bottom:0}
+    footer{color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    @media(max-width:680px){.wrap{padding:20px 16px 40px}header{align-items:flex-start;flex-direction:column;gap:12px}nav{gap:16px}.cards{grid-template-columns:1fr}.eyebrow{margin-top:30px}.tools{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="logo"><span>◉</span> 成分雷达</div>
+      <nav aria-label="项目材料">
+        <a href="https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/PROJECT_REPORT.md">项目报告</a>
+        <a href="https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/COMPETITION_ESSAY.md">开发记录</a>
+        <a href="https://github.com/Ricardo-100/ingredient-radar-skill">GitHub 源码 ↗</a>
+      </nav>
+    </header>
+    <p class="eyebrow">INGREDIENT RADAR / 60 秒 DEMO</p>
+    <h1>拍清标签，<br>吃得明白。</h1>
+    <p class="intro">把食品标签交给支持看图的 Agent，说明目标与忌口。查看每份营养数字，再回到包装原文核对依据。</p>
+    <video controls playsinline preload="metadata" poster="media/ingredient-radar-cover.jpg" aria-label="成分雷达 60 秒中文操作流程演示">
+      <source src="media/ingredient-radar-demo.mp4" type="video/mp4">
+      <track kind="captions" src="media/ingredient-radar-promo.vtt" srclang="zh" label="中文字幕（画面已含字幕）">
+      你的浏览器不支持内嵌视频。请使用下面的链接下载 MP4。
+    </video>
+    <div class="tools">
+      <span class="meta">60 秒 · 1920 × 1080 · 中文旁白与字幕 · 约 9.8 MB</span>
+      <a class="button" href="media/ingredient-radar-demo.mp4" download>下载 MP4 ↓</a>
+    </div>
+    <section class="cards" aria-label="演示步骤">
+      <article class="card"><span class="num">01 / 提供标签</span><h2>目标由你选择</h2><p>提供食品包装照片，明确选择增肌、减脂控糖或生酮，并声明关注的过敏原。</p></article>
+      <article class="card"><span class="num">02 / 换算份量</span><h2>看懂每次吃多少</h2><p>同时保留每 100 g 与每份口径。演示样例为 60 g 整包，糖 19.4 g、能量 280 kcal。</p></article>
+      <article class="card"><span class="num">03 / 回看依据</span><h2>结论对应原文</h2><p>保留标签文字和定位区域；看不清的字段提示复核，帮助你核对判断来源。</p></article>
+    </section>
+    <details open>
+      <summary>关于本次演示</summary>
+      <p>对话画面为 Agent 操作流程示意，项目当前形态为 Skill。数字和结果图来自仓库合成标签及已有抽取记录的实际脚本回放；本视频不表示重新识别新照片或已发布独立 App。</p>
+      <p>本项目用于配料与营养信息的规则比对，不替代医疗或专业营养建议。过敏相关结论请人工核对原包装。</p>
+      <p><a href="https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/DEMO.md">演示来源与时间线</a> · <a href="https://github.com/Ricardo-100/ingredient-radar-skill/tree/main/promo-video">可编辑视频工程</a></p>
+    </details>
+    <footer><span>成分雷达 · ingredient-radar-skill</span><a href="media/ingredient-radar-promo.srt" download>下载字幕 SRT</a></footer>
+  </main>
+</body>
+</html>

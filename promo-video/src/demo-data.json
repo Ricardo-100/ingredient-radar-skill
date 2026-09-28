@@ -1,0 +1,109 @@
+{
+  "product": "轻态 · 高蛋白威化棒",
+  "goal_label": "减脂 · 控糖",
+  "serving_g": 60,
+  "per_100g": {
+    "kcal": 466,
+    "protein": 18.6,
+    "fat": 17.2,
+    "trans_fat": 0,
+    "carbs": 55.8,
+    "sugar": 32.4,
+    "fiber": null,
+    "sodium": 320
+  },
+  "per_serving": {
+    "kcal": 280,
+    "protein": 11.2,
+    "fat": 10.3,
+    "trans_fat": 0,
+    "carbs": 33.5,
+    "sugar": 19.4,
+    "fiber": null,
+    "sodium": 192
+  },
+  "allergen_hits": [
+    "命中 花生:直接含"
+  ],
+  "verdict": "减脂·控糖:不推荐",
+  "evidence": [
+    {
+      "region": "name",
+      "phrase": "品名 / 规格",
+      "box": [
+        57,
+        68,
+        454,
+        150
+      ],
+      "box_norm_0_1000": [
+        62,
+        75,
+        498,
+        165
+      ],
+      "score": 0.95,
+      "double_check": "agent",
+      "text": "轻态 · 高蛋白威化棒 · 净含量 60g"
+    },
+    {
+      "region": "ing",
+      "phrase": "配料表",
+      "box": [
+        57,
+        177,
+        821,
+        300
+      ],
+      "box_norm_0_1000": [
+        62,
+        195,
+        900,
+        330
+      ],
+      "score": 0.95,
+      "double_check": "agent",
+      "text": "花生酱、白砂糖、小麦粉、植物油、脱脂乳粉、大豆蛋白粉、可可脂、麦芽糊精…"
+    },
+    {
+      "region": "all",
+      "phrase": "致敏原提示",
+      "box": [
+        57,
+        332,
+        862,
+        419
+      ],
+      "box_norm_0_1000": [
+        62,
+        365,
+        945,
+        460
+      ],
+      "score": 0.95,
+      "double_check": "agent",
+      "text": "致敏原提示:含花生、含麸质的谷物(小麦)、乳及乳制品、大豆;生产线亦加工坚果。"
+    },
+    {
+      "region": "nut",
+      "phrase": "营养成分表",
+      "box": [
+        57,
+        460,
+        853,
+        787
+      ],
+      "box_norm_0_1000": [
+        62,
+        505,
+        935,
+        865
+      ],
+      "score": 0.95,
+      "double_check": "agent",
+      "text": "每 100 g · kcal 466 · 蛋白 18.6 · 脂肪 17.2 · 反式脂肪 0 · 碳水 55.8 · 糖 32.4 · 钠 320"
+    }
+  ],
+  "disclaimer": "以上仅为配料与营养成分的机械比对，不替代医嘱、不等同专业营养诊断；一切数值以包装标识为准，过敏请务必人工复核原包装。",
+  "rules_version": "1.3"
+}

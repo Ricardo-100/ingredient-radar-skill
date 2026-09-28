@@ -4,6 +4,19 @@
 
 本项目是供具备看图能力的 Agent 使用的 Skill：Agent 负责在照片中定位并抄录字段；Python 脚本负责每份折算、规则判定、过敏原匹配和结果图渲染。**只给脚本一张图片无法完成识别**，还需要 Agent 填写的 `--agent-json` 文件。
 
+## 项目报告、Demo 与参赛征文
+
+| 材料 | 入口 |
+| --- | --- |
+| 项目及报告书 | [项目报告书](docs/PROJECT_REPORT.md) |
+| 60 秒横屏 Demo | [观看说明与视频下载](docs/DEMO.md) |
+| 参赛征文 | [从“高蛋白”到“看得见依据”：成分雷达的开发记录](docs/COMPETITION_ESSAY.md) |
+| 可编辑视频工程 | [Remotion 源码与素材](promo-video/README.md) |
+
+[![成分雷达 60 秒 Demo](docs/media/ingredient-radar-cover.jpg)](docs/DEMO.md)
+
+Demo 包含 Agent 对话流程示意及实际脚本结果回放，配有中文旁白与字幕。视频、报告、征文及制作源码均保存在本仓库；网页播放器配置见 [GitHub 托管说明](docs/PUBLISHING.md)。
+
 ## 能做什么
 
 - 定位品名、配料表、致敏原提示和营养成分表，并把结论关联回原图。
