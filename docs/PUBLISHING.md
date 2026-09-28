@@ -5,10 +5,14 @@
 | 材料 | 公开地址 |
 | --- | --- |
 | 项目及报告书 | https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/PROJECT_REPORT.md |
-| Demo 说明与视频下载 | https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/DEMO.md |
+| Demo 在线播放与视频下载 | https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/DEMO.md |
 | 参赛征文 | https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/COMPETITION_ESSAY.md |
 
-## 启用网页播放器
+## 在 GitHub 直接播放
+
+打开 [Demo 页面](DEMO.md) 即可点击内嵌播放器观看，项目 README 也提供同一视频。成片通过 GitHub 视频附件上传，下载版本继续保留在本仓库中。此方式不需要开启 GitHub Pages。
+
+## 可选：启用独立网页播放器
 
 本目录包含无需构建的静态播放器 `index.html`，视频与字幕使用同仓库相对路径。
 
@@ -24,6 +28,6 @@
 
 ## 更新材料
 
-- 替换 `media/ingredient-radar-demo.mp4` 后，同步更新封面、字幕、`manifest.json` 与说明中的规格。
+- 更新成片时，重新上传 GitHub 视频附件并同步替换 README 和 Demo 页面中的附件链接；同时更新仓库 MP4、封面、字幕、`manifest.json` 与说明中的规格。
 - 宣传片制作工程、原始配音、生成工具与分镜记录只保留在本地。相关目录、运行输出及依赖缓存已加入 Git 忽略列表。
 - 对新标签生成的运行记录可能含本机路径或用户输入；先整理成适合公开的材料，再加入版本控制。

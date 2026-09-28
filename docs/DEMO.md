@@ -1,11 +1,11 @@
 # 成分雷达｜60 秒 Demo 视频
 
-[![点击打开 MP4 视频](media/ingredient-radar-cover.jpg)](https://github.com/Ricardo-100/ingredient-radar-skill/raw/refs/heads/main/docs/media/ingredient-radar-demo.mp4)
+https://github.com/user-attachments/assets/2c690f07-66dc-4588-b6aa-80f47ba5b8fe
 
 **[打开 / 下载 MP4 成片](https://github.com/Ricardo-100/ingredient-radar-skill/raw/refs/heads/main/docs/media/ingredient-radar-demo.mp4)**<br>
 [仓库内的视频文件](media/ingredient-radar-demo.mp4) · [字幕 SRT](media/ingredient-radar-promo.srt) · [项目报告书](PROJECT_REPORT.md) · [参赛征文](COMPETITION_ESSAY.md)
 
-链接由 GitHub 托管。浏览器可能直接播放，也可能下载；下载后可用本地播放器打开。仓库同时包含 [HTML 播放页源文件](index.html)，启用 GitHub Pages 后可在网页中播放。
+点击上方播放器即可在 GitHub 页面中观看，无需开启 GitHub Pages。若浏览器无法播放，可使用 MP4 下载入口。仓库另附 [独立 HTML 播放页源文件](index.html)，供可选的 GitHub Pages 部署使用。
 
 ## 视频规格
 
@@ -42,4 +42,4 @@
 - 项目 Demo 视频：[本页](https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/DEMO.md)
 - 参赛征文：[开发记录](https://github.com/Ricardo-100/ingredient-radar-skill/blob/main/docs/COMPETITION_ESSAY.md)
 
-若活动要求在线播放或指定发布平台，应按活动要求选择入口。仓库的 [GitHub Pages 配置说明](PUBLISHING.md) 提供网页播放器的启用方法。
+本页提供 GitHub 内嵌播放器，可作为 Demo 视频入口。若活动指定其他发布平台，请按活动要求提交。需要独立网页时，可参考 [GitHub Pages 配置说明](PUBLISHING.md)。
